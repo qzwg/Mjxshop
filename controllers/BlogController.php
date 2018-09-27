@@ -1,33 +1,35 @@
 <?php
 namespace controllers;
-class GoodsController{
+class BlogController{
     public function index()
     {
-        view('Goods/index');
+        view('blog/index');
     }
 
     public function create()
     {
-        view('Goods/create');
+        view('blog/create');
     }
 
     public function insert()
     {
-        view('Goods/insert');
+        $blog = new \models\Blog;
+        $blog->fill($_POST);
+        $blog->insert();
     }
 
     public function edit()
     {
-        view('Goods/edit');
+        view('blog/edit');
     }
 
     public function update()
     {
-        view('Goods/update');
+        view('blog/update');
     }
 
     public function delete()
     {
-        view('Goods/delete');
+        view('blog/delete');
     }
 }

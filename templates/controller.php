@@ -13,7 +13,9 @@ class <?=$cname?>
 
     public function insert()
     {
-        view('<?=$tableName?>/insert');
+        $<?=$tableName?> = new \models\<?=$tableName1?>;
+        $<?=$tableName?>->fill($_POST);
+        $<?=$tableName?>->insert();
     }
 
     public function edit()
