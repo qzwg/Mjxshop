@@ -1,23 +1,6 @@
 namespace models;
-class <?=$mname?>
+class <?=$mname?> extends Model
 {
-    public function insert()
-    {
-
-    }
-
-    public function update()
-    {
-        
-    }
-
-    public function delete()
-    {
-        
-    }
-
-    public function search()
-    {
-        
-    }
+    protected $table = '<?=$tableName?>';
+    protected $fillable = ['<?=$fillable?>'];
 }

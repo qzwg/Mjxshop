@@ -27,7 +27,7 @@
                 <td>
                     <?php if($v['Type'] == 'longtext'): ?>
                         <textarea name="<?=$v['Field']?>" id="" cols="80
-                            " rows="10"><?=$v['Field']?></textarea>
+                            " rows="10"></textarea>
                     <?php elseif(substr($v['Type'],0,4) == 'enum'): ?>
                         <input type="radio" name="<?=$v['Field']?>" value="y" checked>是
                         <input type="radio" name="<?=$v['Field']?>" value="n" >否

@@ -1,9 +1,12 @@
 namespace controllers;
+use models\<?=$mname?>;
 class <?=$cname?>
 {
     public function index()
     {
-        view('<?=$tableName?>/index');
+        $model = new <?=$mname?>;
+        $data = $model->findAll();
+        view('<?=$tableName?>/index',$data);
     }
 
     public function create()
@@ -13,23 +16,33 @@ class <?=$cname?>
 
     public function insert()
     {
-        $<?=$tableName?> = new \models\<?=$tableName1?>;
+        $<?=$tableName?> = new <?=$tableName1?>;
         $<?=$tableName?>->fill($_POST);
         $<?=$tableName?>->insert();
+        header('Location:/<?=$tableName?>/index');
     }
 
     public function edit()
     {
-        view('<?=$tableName?>/edit');
+        $model = new <?=$mname?>;
+        $data = $model->findOne($_GET['id']);
+        view('<?=$tableName?>/edit',[
+            'data'=>$data,
+        ]);
     }
 
     public function update()
     {
-        view('<?=$tableName?>/update');
+        $model = new <?=$mname?>;
+        $model->fill($_POST);
+        $model->update($_GET['id']);
+        header('/<?=$tableName?>/index');
     }
 
     public function delete()
     {
-        view('<?=$tableName?>/delete');
+        $model = new <?=$mname?>;
+        $model->delete($_GET['id']);
+        header('/<?=$tableName?>/index');
     }
 }

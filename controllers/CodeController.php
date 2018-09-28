@@ -9,7 +9,7 @@ class CodeController
         $tableName1 = ucfirst($tableName);
         //生成控制器
         $cname = ucfirst($tableName).'Controller';
-        
+        $mname = ucfirst($tableName);
         /**
          * 加载模版
          * 生成控制器
@@ -19,7 +19,7 @@ class CodeController
         $str = ob_get_clean();
         file_put_contents(ROOT . 'controllers/' . $cname . '.php',"<?php\r\n" . $str);
         //生成模型
-        $mname = ucfirst($tableName);
+        
         ob_start();
         include(ROOT . 'templates/model.php');
         $str = ob_get_clean();

@@ -1,5 +1,6 @@
 <?php
 namespace models;
+use PDO;
 class Model
 {
     protected $_db;
@@ -10,12 +11,20 @@ class Model
     {
         $this->_db = \libs\Db::make();
     }
+
+    protected function _before_write(){}
+    protected function _after_write(){}
+    protected function _before_delete(){}
+    protected function _after_delete(){}
+
     public function insert()
     {
+        $this->_before_write();
+
         $keys = [];
         $values = [];
         $token = [];
-
+        
         //预处理sql
         foreach($this->data as $k => $v)
         {
@@ -26,30 +35,103 @@ class Model
         $keys = implode(',',$keys);
         $token = implode(',',$token);
         $sql = "INSERT INTO {$this->table}($keys) VALUES($token)";
-        var_dump($this->_db);
+        var_dump($sql);
         $stmt = $this->_db->prepare($sql);
-        return $stmt->execute($values);
+        $stmt->execute($values);
+        
+        $this->data['id'] = $this->_db->lastInsertId();
+        $this->_after_write();
+        
 
     }
 
-    public function update()
-    {
+    public function update($id)
+    {   
+        $this->_before_write();
+
+        $set = [];
+        $token = [];
+
+        foreach($this->data as $k => $v)
+        {
+            $set[] = "$k=?";
+            $values[] = $v;
+            $token[] = '?';
+        }
+
+        $set = implode(',',$set);
         
+        $values[] = $id;
+
+        $sql = "UPDATE {$this->table} SET $set WHERE id=?";
+        
+        $stmt = $this->_db->prepare($sql);
+        $stmt->execute($values);
+        $this->_after_write();
+
     }
 
-    public function delete()
+    public function delete($id)
     {
         
+        $this->_before_delete();
+        $stmt = $this->_db->prepare("DELETE FROM {$this->table} WHERE id=?");
+        $stmt->execute([$id]);
+        $this->_after_delete();
     }
 
-    public function findAll()
+    public function findAll($options = [])
     {
-        
+        $_option = [
+            'fields' => '*',
+            'where' => 1,
+            'order_by' => 'id',
+            'order_way' => 'desc',
+            'per_page' => 20,
+        ];
+        if($options)
+        {
+            $_option = array_merge($_option,$options);
+        }
+
+        //翻页
+        $page = isset($_GET['page']) ? max(1,(int)$_GET['page']) : 1;
+        $offset = ($page-1)*$_option['per_page'];
+        $sql = "SELECT {$_option['fields']}
+                    FROM {$this->table}
+                    WHERE {$_option['where']}
+                    ORDER BY {$_option['order_by']} {$_option['order_way']}
+                    LIMIT $offset,{$_option['per_page']};
+        ";
+        //var_dump($sql);
+        $stmt = $this->_db->prepare($sql);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //var_dump($data);
+        $stmt = $this->_db->prepare("SELECT COUNT (*) FROM {$this->table} WHERE {$_option['where']}");
+        $stmt->execute();
+        $pageCount = ceil($count/$_option['per_page']);
+
+        $page_str = '';
+        if($pageCount>1)
+        {
+            for($i;$i<=$pageCount;$i++)
+            {
+                $page_str .= '<a href="?page='.$i.'">'.$i.'</a>';
+            }
+        }
+
+        return [
+            'data' => $data,
+            'page' => $page_str,
+        ];
     }
 
-    public function findOne()
+    public function findOne($id)
     {
-        
+        $stmt = $this->_db->prepare("SELECT FROM {$this->table} WHERE id=?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);   
     }
 
     public function fill($data)
@@ -62,6 +144,6 @@ class Model
                 unset($data[$k]);
             }
         }
-        $this->data = $data;
+        $this->data = $data;  
     }
 }

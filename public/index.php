@@ -7,7 +7,7 @@ function load($class)
 {
     // var_dump($class);
     $path = str_replace('\\','/',$class);
-    var_dump(ROOT . $path . '.php');
+    // var_dump(ROOT . $path . '.php');
     require(ROOT . $path . '.php');
 }
 spl_autoload_register('load');
@@ -23,6 +23,6 @@ $router = explode('/',$_SERVER['PATH_INFO']);
 $controller = '\controllers\\' . ucfirst($router[1]) . 'Controller';
 $action = $router[2];
 }
-var_dump($controller);
+// var_dump($controller);
 $c = new $controller;
 $c->$action();
