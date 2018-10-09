@@ -78,16 +78,20 @@ class Model
         $stmt = $this->_db->prepare("DELETE FROM {$this->table} WHERE id=?");
         $stmt->execute([$id]);
         $this->_after_delete();
+        redirect('/role/index');
     }
 
     public function findAll($options = [])
     {
+        
         $_option = [
             'fields' => '*',
             'where' => 1,
             'order_by' => 'id',
             'order_way' => 'desc',
             'per_page' => 20,
+            'join'=>'',
+            'groupby'=>'',
         ];
         if($options)
         {
@@ -99,11 +103,12 @@ class Model
         $offset = ($page-1)*$_option['per_page'];
         $sql = "SELECT {$_option['fields']}
                     FROM {$this->table}
+                    {$_option['join']}
                     WHERE {$_option['where']}
+                    {$_option['groupby']}
                     ORDER BY {$_option['order_by']} {$_option['order_way']}
                     LIMIT $offset,{$_option['per_page']};
         ";
-        //var_dump($sql);
         $stmt = $this->_db->prepare($sql);
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -136,7 +141,7 @@ class Model
 
     public function fill($data)
     {
-        
+        var_dump($data);
         foreach($data as $k => $v)
         {
             if(!in_array($k,$this->fillable))
@@ -145,5 +150,28 @@ class Model
             }
         }
         $this->data = $data;  
+    }
+
+    //递归树形结构
+    public function tree()
+    {
+        $data = $this->findAll();
+        $ret = $this->_tree($data['data']);
+        return  $ret;
+    }
+
+    protected function _tree($data,$parent_id=0,$level=0)
+    {
+        static $_ret = [];
+        foreach($data as $v)
+        {
+            if($v['parent_id'] == $parent_id)
+            {
+                $v['level'] = $level;
+                $_ret[] = $v;
+                $this->_tree($data,$v['id'],$level+1);
+            }
+        }
+        return $_ret;
     }
 }
