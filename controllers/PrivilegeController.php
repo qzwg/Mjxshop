@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use models\Privilege;
-class PrivilegeController{
+class PrivilegeController extends BaseController{
     public function index()
     {
         $model = new Privilege;

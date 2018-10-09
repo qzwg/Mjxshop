@@ -1,6 +1,6 @@
 <?php
 namespace controllers;
-class BlogController{
+class BlogController extends BaseController{
     public function index()
     {
         view('blog/index');

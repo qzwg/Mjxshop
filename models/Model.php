@@ -35,7 +35,6 @@ class Model
         $keys = implode(',',$keys);
         $token = implode(',',$token);
         $sql = "INSERT INTO {$this->table}($keys) VALUES($token)";
-        var_dump($sql);
         $stmt = $this->_db->prepare($sql);
         $stmt->execute($values);
         
@@ -134,14 +133,13 @@ class Model
 
     public function findOne($id)
     {
-        $stmt = $this->_db->prepare("SELECT FROM {$this->table} WHERE id=?");
+        $stmt = $this->_db->prepare("SELECT * FROM {$this->table} WHERE id= ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);   
     }
 
     public function fill($data)
     {
-        var_dump($data);
         foreach($data as $k => $v)
         {
             if(!in_array($k,$this->fillable))

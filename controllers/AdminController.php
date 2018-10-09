@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use models\Admin;
-class AdminController{
+class AdminController extends BaseController{
     public function index()
     {
         $model = new Admin;
@@ -11,23 +11,33 @@ class AdminController{
 
     public function create()
     {
-        view('admin/create');
+        $model = new \models\Role;
+        $data = $model->findAll();
+
+        view('admin/create',$data);
     }
 
     public function insert()
     {
         $admin = new Admin;
+  
         $admin->fill($_POST);
         $admin->insert();
-        header('Location:/admin/index');
+        redirect('/admin/index');
     }
 
     public function edit()
     {
         $model = new Admin;
         $data = $model->findOne($_GET['id']);
+
+        // 取出权限的数据
+        $priModel = new \models\admin;
+        // 获取树形数据（递归排序好的）
+        $priData = $priModel->tree();
         view('admin/edit',[
             'data'=>$data,
+            'priData'=>$priData,
         ]);
     }
 
@@ -43,6 +53,6 @@ class AdminController{
     {
         $model = new Admin;
         $model->delete($_GET['id']);
-        header('/admin/index');
+        redirect('/admin/index');
     }
 }

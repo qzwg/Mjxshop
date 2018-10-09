@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use models\;
-class Controller{
+class Controller extends BaseController{
     public function index()
     {
         $model = new ;

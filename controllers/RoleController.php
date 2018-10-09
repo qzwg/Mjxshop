@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use models\Role;
-class RoleController{
+class RoleController extends BaseController{
     public function index()
     {
         $model = new Role;
@@ -33,8 +33,14 @@ class RoleController{
     {
         $model = new Role;
         $data = $model->findOne($_GET['id']);
+
+        $priModel = new \models\Privilege;
+        $priData = $priModel->tree();
+        $priIds = $model->getPriIds($_GET['id']);
         view('role/edit',[
             'data'=>$data,
+            'priData'=>$priData,
+            'priIds'=>$priIds,
         ]);
     }
 
@@ -43,7 +49,7 @@ class RoleController{
         $model = new Role;
         $model->fill($_POST);
         $model->update($_GET['id']);
-        header('/role/index');
+        redirect('/role/index');
     }
 
     public function delete()

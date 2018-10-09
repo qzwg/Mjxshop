@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 use models\Brand;
-class BrandController{
+class BrandController extends BaseController{
     public function index()
     {
         $model = new Brand;
