@@ -42,9 +42,13 @@ class GoodsController extends BaseController{
     public function edit()
     {
         $model = new Goods;
-        $data = $model->findOne($_GET['id']);
+        $data = $model->getFullInfo($_GET['id']);
+        $model = new \models\Category;
+        $topCat = $model->getCat();
+        // var_dump($data);die;
         view('Goods/edit',[
             'data'=>$data,
+            'topCat' => $topCat['data'],
         ]);
     }
 
