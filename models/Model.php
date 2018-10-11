@@ -36,7 +36,7 @@ class Model
         $token = implode(',',$token);
         $sql = "INSERT INTO {$this->table}($keys) VALUES($token)";
         $stmt = $this->_db->prepare($sql);
-        $stmt->execute($values);
+        $a = $stmt->execute($values);
         
         $this->data['id'] = $this->_db->lastInsertId();
         $this->_after_write();
@@ -77,7 +77,7 @@ class Model
         $stmt = $this->_db->prepare("DELETE FROM {$this->table} WHERE id=?");
         $stmt->execute([$id]);
         $this->_after_delete();
-        redirect('/role/index');
+       
     }
 
     public function findAll($options = [])
