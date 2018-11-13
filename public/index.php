@@ -1,37 +1,60 @@
 <?php
-define('ROOT',__DIR__ . '/../');
-// 设置时区
-date_default_timezone_set('PRC');
 
-// 使用 redis 保存 SESSION
-ini_set('session.save_handler', 'redis');
-// 设置 redis 服务器的地址、端
-ini_set('session.save_path', 'tcp://127.0.0.1:6379?database=3');
-session_start();    
+/**
+ * Laravel - A PHP Framework For Web Artisans
+ *
+ * @package  Laravel
+ * @author   Taylor Otwell <taylor@laravel.com>
+ */
 
-require(ROOT . 'libs/functions.php');
+define('LARAVEL_START', microtime(true));
+define('ROOT', __DIR__ . '/../');
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| our application. We just need to utilize it! We'll simply require it
+| into the script here so that we don't have to worry about manual
+| loading any of our classes later on. It feels great to relax.
+|
+*/
 
-//自动加载
-function load($class)
-{
-    // var_dump($class);
-    $path = str_replace('\\','/',$class);
-    // var_dump(ROOT . $path . '.php');
-    require(ROOT . $path . '.php');
-}
-spl_autoload_register('load');
+require __DIR__.'/../vendor/autoload.php';
 
-//解析路由
-//$_SERVER,设置默认，if判断
-$controller = '\controllers\IndexController';
-$action = 'index';
-if(isset($_SERVER['PATH_INFO']))
-{
-//转为数组，取出第2,3个
-$router = explode('/',$_SERVER['PATH_INFO']);
-$controller = '\controllers\\' . ucfirst($router[1]) . 'Controller';
-$action = $router[2];
-}
-// var_dump($controller);
-$c = new $controller;
-$c->$action();
+/*
+|--------------------------------------------------------------------------
+| Turn On The Lights
+|--------------------------------------------------------------------------
+|
+| We need to illuminate PHP development, so let us turn on the lights.
+| This bootstraps the framework and gets it ready for use, then it
+| will load up this application so that we can run it and send
+| the responses back to the browser and delight our users.
+|
+*/
+
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request
+| through the kernel, and send the associated response back to
+| the client's browser allowing them to enjoy the creative
+| and wonderful application we have prepared for them.
+|
+*/
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);
